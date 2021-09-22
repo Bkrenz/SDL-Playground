@@ -3,11 +3,13 @@
  * 
  */
 
-#ifndef __GAME_CPP__
-#define __GAME_CPP__
+#include <SDL.h>
+#include <SDL_image.h>
 
-#include <SDL2/SDL.h>
 #include <string>
+#include <stdio.h>
+#include <iostream>
+
 #include <game.h>
 
 Game::Game(std::string title, int windowWidth, int windowHeight)
@@ -15,17 +17,95 @@ Game::Game(std::string title, int windowWidth, int windowHeight)
     this->title = title;
     this->windowHeight = windowHeight;
     this->windowWidth = windowWidth;
-};
+}
 
-void Game::Initialize()
+bool Game::Initialize()
 {
-    SDL_Init(SDL_INIT_EVERYTHING);
+    // Initialize all the things
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+    {
+        std::cout << "SDL_INIT" << std::endl;
+        printf("Failed to load: %s", SDL_GetError());
+        return false;
+    }
 
+    // Setup the window
 	this->sdlWindow = SDL_CreateWindow(this->title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->windowWidth, this->windowHeight, 0);
-	this->sdlRenderer = SDL_CreateRenderer(this->getWindow(), -1, 0);
+	if (this->sdlWindow == NULL)
+    {
+        std::cout << "SDL_CreateWindow" << std::endl;
+        printf("Failed to load: %s", SDL_GetError());
+        return false;
+    }
+    
+    // Setup the Renderer
+    this->sdlRenderer = SDL_CreateRenderer(this->getWindow(), -1, 0);
+    if (this->sdlRenderer == NULL)
+    {
+        std::cout << "SDL_CreateRenderer" << std::endl;
+        printf("Failed to load: %s", SDL_GetError());
+        return false;
+    }
 
+    // Get the SDL Surface
+    this->screenSurface = SDL_GetWindowSurface( this->getWindow() );
+    if (this->screenSurface == NULL)
+    {
+        std::cout << "SDL_GetWindowSurface" << std::endl;
+        printf("Failed to load: %s", SDL_GetError());
+        return false;
+    }
+
+    //Initialize PNG loading
+    int imgFlags = IMG_INIT_PNG;
+    if( !( IMG_Init( imgFlags ) & imgFlags ) )
+    {
+        std::cout << "IMG_INIT_PNG" << std::endl;
+        printf("Failed to load: %s", SDL_GetError());
+        return false;
+    }
+
+    // Try to load the splash image
+    this->splashImage = this->loadSurface("..\\assets\\images\\splash.png");
+    if (this->splashImage == NULL)
+    {
+        std::cout << "loadSurface" << std::endl;
+        printf("Failed to load: %s", SDL_GetError());
+        return false;
+    }
+
+    // Everything works.
+    std::cout << "Working!" << std::endl;
 	this->running = true;
-};
+    return true;
+}
+
+SDL_Surface* Game::loadSurface( std::string path )
+{
+    //The final optimized image
+    SDL_Surface* optimizedSurface = NULL;
+
+    //Load image at specified path
+    SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
+    if( loadedSurface == NULL )
+    {
+        printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
+    }
+    else
+    {
+        //Convert surface to screen format
+        optimizedSurface = SDL_ConvertSurface( loadedSurface, this->screenSurface->format, 0 );
+        if( optimizedSurface == NULL )
+        {
+            printf( "Unable to optimize image %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
+        }
+
+        //Get rid of old loaded surface
+        SDL_FreeSurface( loadedSurface );
+    }
+
+    return optimizedSurface;
+}
 
 void Game::HandleEvents() {
     while (SDL_PollEvent(&event))
@@ -33,13 +113,13 @@ void Game::HandleEvents() {
         switch (event.type)
         {
         case SDL_QUIT:
-            this->running = false;
+            running = false;
             break;
 
         case SDL_KEYDOWN:
             if (event.key.keysym.sym == SDLK_ESCAPE)
             {
-                this->running = false;
+                running = false;
             }
         }
     }
@@ -52,16 +132,19 @@ void Game::Update()
 
 void Game::Render()
 {
-    
     SDL_RenderClear(sdlRenderer);
 
     SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 
-    SDL_RenderPresent(sdlRenderer);
+    SDL_BlitSurface(this->splashImage, NULL, this->screenSurface, NULL);
+    SDL_UpdateWindowSurface(this->getWindow());
+
 }
 
 void Game::CleanUp()
 {
+    SDL_FreeSurface(this->splashImage);
+    SDL_FreeSurface(this->screenSurface);
 	SDL_DestroyRenderer(sdlRenderer);
 	SDL_DestroyWindow(sdlWindow);
 	SDL_Quit();
@@ -81,5 +164,3 @@ SDL_Renderer* Game::getRenderer()
 {
     return this->sdlRenderer;
 }
-
-#endif

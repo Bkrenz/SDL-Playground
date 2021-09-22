@@ -6,7 +6,7 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <string>
 
 class Game
@@ -14,7 +14,7 @@ class Game
     public:
         Game(std::string title, int windowWidth, int windowHeight);
 
-        void Initialize();
+        bool Initialize();
         void HandleEvents();
         void Update();
         void Render();
@@ -28,6 +28,9 @@ class Game
 
         bool running;
 
+        SDL_Surface* screenSurface;
+        SDL_Surface* splashImage;
+
         std::string title;
         int windowWidth;
         int windowHeight;
@@ -39,6 +42,9 @@ class Game
         SDL_Renderer* getRenderer();
         
 	    SDL_Event event;
+
+        SDL_Surface* loadSurface( std::string path );
+
 
 
 };

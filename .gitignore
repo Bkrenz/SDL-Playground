@@ -1,6 +1,7 @@
 # Ignore Folders
 .vscode
 build/
+assets/
 
 # Prerequisites
 *.d
