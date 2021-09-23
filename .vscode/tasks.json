@@ -1,0 +1,35 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "SDL2",
+			"command": "g++",
+			"args": [
+				"-g",
+				"src\\*",
+				"-o",
+				"build\\sdl_playground.exe",
+				"-I", "include\\",
+				"-I", "src\\",
+				"-L", "lib\\sdl2\\",
+				"-L", "lib\\sdl2_image\\",
+				"-lmingw32",
+				"-l", "SDL2main",
+				"-l", "SDL2",
+				"-l", "SDL2_image",
+				"-mwindows"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

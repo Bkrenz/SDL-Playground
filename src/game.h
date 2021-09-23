@@ -6,7 +6,7 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <string>
 
 class Game
