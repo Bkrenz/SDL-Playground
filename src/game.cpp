@@ -24,7 +24,6 @@ bool Game::Initialize()
     // Initialize all the things
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
-        std::cout << "SDL_INIT" << std::endl;
         printf("Failed to load: %s", SDL_GetError());
         return false;
     }
@@ -33,7 +32,6 @@ bool Game::Initialize()
 	this->sdlWindow = SDL_CreateWindow(this->title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->windowWidth, this->windowHeight, 0);
 	if (this->sdlWindow == NULL)
     {
-        std::cout << "SDL_CreateWindow" << std::endl;
         printf("Failed to load: %s", SDL_GetError());
         return false;
     }
@@ -42,7 +40,6 @@ bool Game::Initialize()
     this->sdlRenderer = SDL_CreateRenderer(this->getWindow(), -1, 0);
     if (this->sdlRenderer == NULL)
     {
-        std::cout << "SDL_CreateRenderer" << std::endl;
         printf("Failed to load: %s", SDL_GetError());
         return false;
     }
@@ -51,7 +48,6 @@ bool Game::Initialize()
     this->screenSurface = SDL_GetWindowSurface( this->getWindow() );
     if (this->screenSurface == NULL)
     {
-        std::cout << "SDL_GetWindowSurface" << std::endl;
         printf("Failed to load: %s", SDL_GetError());
         return false;
     }
@@ -60,7 +56,6 @@ bool Game::Initialize()
     int imgFlags = IMG_INIT_PNG;
     if( !( IMG_Init( imgFlags ) & imgFlags ) )
     {
-        std::cout << "IMG_INIT_PNG" << std::endl;
         printf("Failed to load: %s", SDL_GetError());
         return false;
     }
@@ -69,13 +64,11 @@ bool Game::Initialize()
     this->splashImage = this->loadSurface("..\\assets\\images\\splash.png");
     if (this->splashImage == NULL)
     {
-        std::cout << "loadSurface" << std::endl;
         printf("Failed to load: %s", SDL_GetError());
         return false;
     }
 
     // Everything works.
-    std::cout << "Working!" << std::endl;
 	this->running = true;
     return true;
 }
